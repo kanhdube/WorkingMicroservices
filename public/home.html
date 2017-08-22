@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+         <meta charset="utf-8">
+        <title> PMS System </title>
+        <script> 
+            $(document).ready(function() {
+                    $("#form").hide(); $("#chargeForm").hide();$("#btnSearch").hide();$("#search").hide();
+                    $("#forCreate").click(function() {
+                        $("#form").show()
+                    });
+                     
+                    $("#forSearch").click(function() {
+                         $("#search").show(); $("#btnSearch").show()
+                     });
+                    $("#postCharges").click(function() {
+                        $("#chargeForm").show();
+                    })
+                    $("#btnSearch").click(function(){
+                      console.log($("#str").val());
+                      $.post('/findReservation',{folio : $("#str").val()}, function(data, status) {
+                          $("#form").show()
+                          populateFields(data);    
+                          //$('#form input').attr('readonly', 'readonly');
+                          // alert("Data: " + data.folioNum +" : "+ data.firstName + "\nStatus: " + status);
+                          });
+                    });
+                    
+                    $("#changeStatus").click(function() {
+                      $('#form input').removeAttr('readonly', 'readonly');
+                      $.post('/changeStatus',{folio : $("#str").val(), status : $("#status").val()}, function(data, status) { 
+                      populateFields(data);
+                      });
+                    });
+
+                    function populateFields(data) {
+                            document.forms["form"].elements[0].value = data.folioNum;
+                            document.forms["form"].elements[1].value = data.firstName;
+                            document.forms["form"].elements[2].value = data.lastName;
+                            document.forms["form"].elements[3].value = data.address;
+                            document.forms["form"].elements[4].value = data.checkinDate;
+                            document.forms["form"].elements[5].value = data.checkoutDate;
+                            document.forms["form"].elements[6].value = data.ratePgm;
+                            document.forms["form"].elements[7].value = data.status;
+                            document.forms["form"].elements[8].value = data.notes;
+                            }
+            });
+        </script>
+    </head>
+    <body>
+        <h2> Welcome to PMS system </h2>
+        <p id = "forCreate"><a href = "#form">Create a Reservation</a></p>
+        <p id="forSearch"> <a href="#search">Search for an existing reservation</a></p>
+        <p id="search"> Enter folio# Or First Name : <input id="str" type="text" name="searchString"></p>
+        <button type="button" id="btnSearch"> Search </button>
+        
+        <div class="container">
+         <form class="form-horizontal" action = "http://localhost:8000/reservations" id = "form" method = "POST" target = "output" >
+         <div class="form-group">
+               <label for="folioNum">Folio# :</label> <input type="text" name="folioNum" placeholder="Folio Number">
+         </div>     
+         <div class="form-group">
+                <label for="firstName">First Name :</label><input type="text" name="firstName" placeholder="First Name"> 
+         </div>   
+                Last Name	: <input type="text" name="lastName">  Address	    : <input type="text" name="address"> <br/><br>
+                Checkin Date   : <input type="text" name="checkinDate">  Checkout Date  : <input type="text" name="checkoutDate"> <br/><br>
+                Rate Pgm       : <input type="text" name="ratePgm"> Current Status : <input type="text" name="status" id="status" > <br/><br>
+                Notes     : <input type="text" name="notes"> <br/><br>
+                <input type="submit" name="action" value="Create">
+                <button type="button" id="changeStatus"> Change Status </button>
+                <button type="button" id="postCharges"> Post Charges </button>
+             </form>
+            </div>
+             <form action = "http://localhost:8081/postCharges" id = "chargeForm" method = "POST" target = "output">
+                Folio#	: <input type="text" name="folioNum"> <br/><br>
+                Charge Code	: <input type="text" name="chargeCode"> <br/><br>
+                Amount	: <input type="text" name="Amount"> <br/><br>
+                Date	: <input type="text" name="postDate"> <br/><br>
+                Notes   : <input type="text" name="Notes"> <br/><br>
+                <input type="submit" name="action" value="Post Charge">
+             </form>
+             
+        </body>
+</html>
