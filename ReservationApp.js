@@ -27,20 +27,22 @@ app.post('/findReservation',(req, res) => {
    })
 });
 app.post('/changeStatus',(req, res) => {
-   var folioForSrch = req.body.folio;
-   var newStatus = req.body.status;
-   Reservation.findOne({folioNum : folioForSrch}, function(err, resultRsrv){
-       if (err) {return console.log("Error fetching reservation data")}
-       resultRsrv.status=newStatus;
-       resultRsrv.save();
-       res.json(resultRsrv.toJSON());
-   })
-    var ForSend = {
-                    "folioNum": folioForSrch,
-                    "status": newStatus
+    console.log("In ChangeStatus ........");
+    var folioForSrch = req.body.folio;
+    var newStatus = req.body.status;
+    Reservation.findOne({folioNum : folioForSrch}, function(err, resultRsrv){
+        if (err) {return console.log("Error fetching reservation data")}
+        resultRsrv.status=newStatus;
+        resultRsrv.save();
+        res.json(resultRsrv.toJSON());
+    });
+    var rsrvStatus = {
+                    folioNum: folioForSrch,
+                    status: newStatus
                 };
+    var ForSend = JSON.stringify(rsrvStatus);
     rab_amqp.sendrsrv(ForSend,'status_q', (err,msg)=>{
-        console.log("Sent the reservation to InhouseApp", err, msg);  
+        console.log("Sent the status change to InhouseApp", err, msg);  
     });
     
 });
