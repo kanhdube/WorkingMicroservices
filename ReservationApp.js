@@ -18,6 +18,17 @@ app.get('/home.html',(req, res) => {
 app.get('/rsrv_details',(req, res) => {
     res.sendFile('/rsrv_details.html');
 });
+rab_amqp.getrsrv('chckout_q',(msg) => {
+    console.log("Checking msg in InhouseApp: ", rab_amqp.resultrsrv);
+    var folioForSrch = rab_amqp.resultrsrv.folioNum;
+    Reservation.findOne({folioNum : folioForSrch}, function(err, resultRsrv){
+       if (err) {return console.log("Error fetching Inhouse data for status change")}
+       else {
+            resultRsrv.status = rab_amqp.resultrsrv.status;
+            resultRsrv.save();
+            }
+    });
+});
 //Searching a reservation from home page
 app.post('/findReservation',(req, res) => {
    var folioForSrch = req.body.folio;
