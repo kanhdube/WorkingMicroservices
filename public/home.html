@@ -7,7 +7,9 @@
         <title> PMS System </title>
         <script> 
             $(document).ready(function() {
-                    $("#form").hide(); $("#chargeForm").hide();$("#btnSearch").hide();$("#search").hide();
+                    $("#form").hide(); 
+                    //$("#inhouseForm").hide();
+                    $("#btnSearch").hide();$("#search").hide();
                     $("#forCreate").click(function() {
                         $("#form").show()
                     });
@@ -15,9 +17,9 @@
                     $("#forSearch").click(function() {
                          $("#search").show(); $("#btnSearch").show()
                      });
-                    $("#postCharges").click(function() {
-                        $("#chargeForm").show();
-                    })
+                   // $("#workWithInhse").click(function() {
+                   //     $("#inhouseForm").show();
+                   // })
                     $("#btnSearch").click(function(){
                       console.log($("#str").val());
                       $.post('/findReservation',{folio : $("#str").val()}, function(data, status) {
@@ -29,12 +31,20 @@
                     });
                     
                     $("#changeStatus").click(function() {
-                      $('#form input').removeAttr('readonly', 'readonly');
+                   //   $('#form input').removeAttr('readonly', 'readonly');
                       $.post('/changeStatus',{folio : $("#str").val(), status : $("#status").val()}, function(data, status) { 
                       populateFields(data);
                       });
                     });
-
+                    $("#checkout").click(function() {
+                    //  $('#form input').removeAttr('readonly', 'readonly');
+                        console.log("Clicked checkout");
+                      $.post('/checkout',{folio : $("#str").val(), status : $("#status").val()}, function(data, status) { 
+                      //populateFields(data);
+                      console.log(data);
+                      });
+                    });
+                  
                     function populateFields(data) {
                             document.forms["form"].elements[0].value = data.folioNum;
                             document.forms["form"].elements[1].value = data.firstName;
@@ -59,7 +69,7 @@
         <div class="container">
          <form class="form-horizontal" action = "http://localhost:8000/reservations" id = "form" method = "POST" target = "output" >
          <div class="form-group">
-               <label for="folioNum">Folio# :</label> <input type="text" name="folioNum" placeholder="Folio Number">
+               <label for="folioNum">Folio# :</label> <input type="text" name="folioNum" placeholder="Folio Number" id = "folioNum">
          </div>     
          <div class="form-group">
                 <label for="firstName">First Name :</label><input type="text" name="firstName" placeholder="First Name"> 
@@ -70,17 +80,12 @@
                 Notes     : <input type="text" name="notes"> <br/><br>
                 <input type="submit" name="action" value="Create">
                 <button type="button" id="changeStatus"> Change Status </button>
-                <button type="button" id="postCharges"> Post Charges </button>
-             </form>
+                <!--<button type="button" id="workWithInhse"> Post Charges </button>-->
+         </form>
             </div>
-             <form action = "http://localhost:8081/postCharges" id = "chargeForm" method = "POST" target = "output">
-                Folio#	: <input type="text" name="folioNum"> <br/><br>
-                Charge Code	: <input type="text" name="chargeCode"> <br/><br>
-                Amount	: <input type="text" name="Amount"> <br/><br>
-                Date	: <input type="text" name="postDate"> <br/><br>
-                Notes   : <input type="text" name="Notes"> <br/><br>
-                <input type="submit" name="action" value="Post Charge">
-             </form>
+             <form action = "http://localhost:8081/inhouse" id = "inhouseForm" method = "GET" target = "output">
+                 <input type="submit" name="action" value="Work with Inhouse folios">   
+            </form>
              
         </body>
 </html>
